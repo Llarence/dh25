@@ -5,6 +5,7 @@
 #include "esp_log.h"
 #include "esp_wifi.h"
 #include "gemini.h"
+#include "scan_wifi.h"
 #include <stddef.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -55,6 +56,15 @@ cJSON *get_chat() {
     cJSON_Delete(chat);
     return NULL;
   }
+
+  char *str = wifi_scan_to_prompt();
+  if (add_message(chat, (Message){"user", str}) < 0) {
+    ESP_LOGE(TAG, "Failed to add prompt");
+    free(str);
+    cJSON_Delete(chat);
+    return NULL;
+  }
+  free(str);
 
   for (int i = message_start; i = (i + 1) % MAX_MESSAGES;) {
     if (add_message(chat, messages[i]) < 0) {

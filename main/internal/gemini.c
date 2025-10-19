@@ -98,6 +98,8 @@ char *call_gemini(cJSON *chat) {
     return NULL;
   }
 
+  ESP_LOGI(TAG, "Gemini POST with: %s", request_data);
+
   esp_http_client_config_t config = {
       .url = GEMINI_ENDPOINT,
       .method = HTTP_METHOD_POST,

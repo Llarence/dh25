@@ -11,11 +11,12 @@
 #include <stdlib.h>
 
 void send(lv_event_t *e) {
+  char *input = strdup(lv_textarea_get_text(ui_Input));
   lv_textarea_set_text(ui_Input, "Thinking...");
 
   lv_refr_now(NULL);
 
-  char *message = get_message(lv_textarea_get_text(ui_Input));
+  char *message = get_message(input);
 
   if (message == NULL) {
     lv_textarea_set_text(ui_ChatBox, "Connection issue. Try again");
