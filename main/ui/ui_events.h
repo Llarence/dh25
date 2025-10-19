@@ -10,7 +10,7 @@
 extern "C" {
 #endif
 
-void abc_xyz(lv_event_t * e);
+void send(lv_event_t * e);
 
 #ifdef __cplusplus
 } /*extern "C"*/

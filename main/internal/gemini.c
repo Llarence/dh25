@@ -1,11 +1,11 @@
 #include "internal/gemini.h"
 
-#include "cJSON.h"
 #include "esp_http_client.h"
 #include "esp_log.h"
 #include "esp_wifi.h"
 #include "secrets.h"
 #include <stddef.h>
+#include <unistd.h>
 
 static const char *TAG = "gemini";
 
@@ -16,15 +16,88 @@ static const char *TAG = "gemini";
 extern const uint8_t google_cert[] asm("_binary_google_cert_pem_start");
 extern const uint8_t google_cert_end[] asm("_binary_google_cert_pem_end");
 
-#include "esp_http_client.h"
-#include "esp_log.h"
-#include <stdlib.h>
-#include <string.h>
+cJSON *init_chat(void) {
+  cJSON *root = cJSON_CreateObject();
+  if (root == NULL) {
+    ESP_LOGE(TAG, "Failed to create root cJSON object.");
+    return NULL;
+  }
 
-const char *request_data =
-    "{\"contents\":[{\"parts\":[{\"text\":\"Hello, Gemini!\"}]}]}";
+  cJSON *contents_array = cJSON_CreateArray();
+  if (contents_array == NULL) {
+    ESP_LOGE(TAG, "Failed to create contents array.");
+    cJSON_Delete(root);
+    return NULL;
+  }
 
-char *call_gemini() {
+  if (!cJSON_AddItemToObject(root, "contents", contents_array)) {
+    ESP_LOGE(TAG, "Failed to add contents array to root object.");
+    cJSON_Delete(root);
+    return NULL;
+  }
+
+  return root;
+}
+
+int add_message(cJSON *request, Message message) {
+  if (request == NULL || message.role == NULL || message.text == NULL) {
+    ESP_LOGE(TAG, "Invalid input parameters (request, role, or text is NULL).");
+    return -1;
+  }
+
+  cJSON *contents_array = cJSON_GetObjectItemCaseSensitive(request, "contents");
+  if (contents_array == NULL || !cJSON_IsArray(contents_array)) {
+    ESP_LOGE(TAG, "Request object does not contain a valid 'contents' array.");
+    return -1;
+  }
+
+  cJSON *message_object = cJSON_CreateObject();
+  if (message_object == NULL) {
+    ESP_LOGE(TAG, "Failed to create message object.");
+    return -1;
+  }
+
+  if (!cJSON_AddStringToObject(message_object, "role", message.role)) {
+    ESP_LOGE(TAG, "Failed to add role '%s' to message object.", message.role);
+    cJSON_Delete(message_object);
+    return -1;
+  }
+
+  cJSON *parts_array = cJSON_CreateArray();
+  cJSON *text_part = cJSON_CreateObject();
+
+  if (parts_array == NULL || text_part == NULL) {
+    ESP_LOGE(TAG, "Failed to create parts or text_part object.");
+    cJSON_Delete(message_object);
+    return -1;
+  }
+
+  if (!cJSON_AddStringToObject(text_part, "text", message.text)) {
+    ESP_LOGE(TAG, "Failed to add text to text_part.");
+    cJSON_Delete(message_object);
+    return -1;
+  }
+
+  cJSON_AddItemToArray(parts_array, text_part);
+
+  if (!cJSON_AddItemToObject(message_object, "parts", parts_array)) {
+    ESP_LOGE(TAG, "Failed to add parts array to message object.");
+    cJSON_Delete(message_object);
+    return -1;
+  }
+
+  cJSON_AddItemToArray(contents_array, message_object);
+
+  return 0;
+}
+
+char *call_gemini(cJSON *chat) {
+  char *request_data = cJSON_Print(chat);
+  if (request_data == NULL) {
+    ESP_LOGE(TAG, "Failed to add parts array to message object.");
+    return NULL;
+  }
+
   esp_http_client_config_t config = {
       .url = GEMINI_ENDPOINT,
       .method = HTTP_METHOD_POST,
@@ -42,6 +115,7 @@ char *call_gemini() {
   if (err != ESP_OK) {
     ESP_LOGE(TAG, "Failed to open HTTP connection: %s", esp_err_to_name(err));
     esp_http_client_cleanup(client);
+    free(request_data);
     return NULL;
   }
 
@@ -104,9 +178,10 @@ char *call_gemini() {
 
   esp_http_client_close(client);
   esp_http_client_cleanup(client);
+  free(request_data);
 
   if (json == NULL) {
-    ESP_LOGE(TAG, "Couldn't parse string tojson");
+    ESP_LOGE(TAG, "Couldn't parse string to json");
     return NULL;
   }
 
@@ -129,7 +204,6 @@ char *call_gemini() {
 
             cJSON *text_item =
                 cJSON_GetObjectItemCaseSensitive(first_part, "text");
-
             if (cJSON_IsString(text_item) && text_item->valuestring != NULL) {
               text = strdup(text_item->valuestring);
             }
@@ -143,5 +217,6 @@ char *call_gemini() {
     ESP_LOGE(TAG, "Couldn't parse json");
   }
 
+  cJSON_Delete(json);
   return text;
 }

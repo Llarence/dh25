@@ -16,8 +16,7 @@ extern "C" {
 #include "ui_events.h"
 
 ///////////////////// SCREENS ////////////////////
-#include "screens/ui_Screen1.h"
-#include "screens/ui_Wifi.h"
+#include "screens/ui_Chat.h"
 
 ///////////////////// VARIABLES ////////////////////
 

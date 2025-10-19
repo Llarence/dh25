@@ -3,7 +3,28 @@
 // LVGL version: 8.3.6
 // Project name: SquareLine_Project
 
+#include "core/lv_obj.h"
+#include "internal/agent.h"
+#include "misc/lv_async.h"
 #include "ui.h"
-#include <stdio.h>
+#include "widgets/lv_textarea.h"
+#include <stdlib.h>
 
-void abc_xyz(lv_event_t *e) { printf("aaaa"); }
+void send(lv_event_t *e) {
+  lv_obj_add_state(ui_Send, LV_STATE_DISABLED);
+  lv_textarea_set_text(ui_Input, "Thinking...");
+
+  lv_refr_now(NULL);
+
+  char *message = get_message(lv_textarea_get_text(ui_Input));
+
+  if (message == NULL) {
+    lv_textarea_set_text(ui_ChatBox, "Connection issue. Try again");
+  } else {
+    lv_textarea_set_text(ui_ChatBox, message);
+    free(message);
+  }
+
+  lv_obj_clear_state(ui_Send, LV_STATE_DISABLED);
+  lv_textarea_set_text(ui_Input, "");
+}
