@@ -20,7 +20,7 @@
 
 static const char *TAG = "wifi_scan";
 
-#define SCAN_TIMEOUT_MS 200
+#define SCAN_TIMEOUT_MS 500
 #define MAX_HOST_ID 255
 #define MAX_WIFI_HITS 24
 #define MAX_HIT_SIZE 256
