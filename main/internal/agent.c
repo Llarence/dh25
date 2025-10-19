@@ -11,7 +11,8 @@
 
 static const char *TAG = "agent";
 
-#define MAX_MESSAGES 8
+// Eight each
+#define MAX_MESSAGES 16
 
 Message messages[MAX_MESSAGES];
 int message_end = 0;
@@ -25,7 +26,7 @@ void push_message(Message message) {
   int next_end = (message_end + 1) % MAX_MESSAGES;
 
   if (next_end == message_start) {
-    ESP_LOGE(TAG, "Buffer full! Overwriting oldest message at index %d.",
+    ESP_LOGW(TAG, "Buffer full! Overwriting oldest message at index %d.",
              message_start);
     message_start = (message_start + 1) % MAX_MESSAGES;
 

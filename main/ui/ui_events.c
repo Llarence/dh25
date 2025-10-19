@@ -11,7 +11,6 @@
 #include <stdlib.h>
 
 void send(lv_event_t *e) {
-  lv_obj_add_state(ui_Send, LV_STATE_DISABLED);
   lv_textarea_set_text(ui_Input, "Thinking...");
 
   lv_refr_now(NULL);
@@ -25,6 +24,5 @@ void send(lv_event_t *e) {
     free(message);
   }
 
-  lv_obj_clear_state(ui_Send, LV_STATE_DISABLED);
   lv_textarea_set_text(ui_Input, "");
 }
