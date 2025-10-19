@@ -1,11 +1,8 @@
 #include "internal/wifi.h"
 
-// main.c - ESP-IDF example: scan for SSID and connect
 #include "esp_event.h"
-#include "esp_http_client.h"
 #include "esp_log.h"
 #include "esp_wifi.h"
-#include "freertos/FreeRTOS.h"
 #include "freertos/event_groups.h"
 #include "freertos/task.h"
 #include "nvs_flash.h"
@@ -36,27 +33,6 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base,
     ESP_LOGI(TAG, "Got IP: " IPSTR, IP2STR(&event->ip_info.ip));
     xEventGroupSetBits(s_wifi_event_group, CONNECTED_BIT);
   }
-}
-
-// TODO: Actually return the data and have custom url or maybe config
-void do_request() {
-  esp_http_client_config_t config = {
-      .url = "http://httpbin.org/get",
-  };
-
-  esp_http_client_handle_t client = esp_http_client_init(&config);
-
-  esp_err_t err = esp_http_client_perform(client);
-
-  if (err == ESP_OK) {
-    ESP_LOGI(TAG, "HTTP GET request successful. Response code: %d",
-             esp_http_client_get_status_code(client));
-    ESP_LOGI(TAG, "Response: %i", esp_http_client_get_content_length(client));
-  } else {
-    ESP_LOGE(TAG, "HTTP GET request failed. Error: %s", esp_err_to_name(err));
-  }
-
-  esp_http_client_cleanup(client);
 }
 
 void init_wifi(void) {
@@ -132,8 +108,6 @@ void init_wifi(void) {
                           pdMS_TO_TICKS(20000));
   if (bits & CONNECTED_BIT) {
     ESP_LOGI(TAG, "Connected to %s", TARGET_SSID);
-
-    do_request();
   } else {
     ESP_LOGW(TAG, "Failed to connect within timeout");
   }

@@ -3,4 +3,6 @@
 
 void init_wifi(void);
 
+void do_request();
+
 #endif
