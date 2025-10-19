@@ -4,13 +4,13 @@
 #include "freertos/task.h"
 #include "lv_port.h"
 
-#include "view/view.h"
+#include "internal/init.h"
 
 void app_main(void) {
   ESP_ERROR_CHECK(bsp_board_init());
   lv_port_init();
 
   lv_port_sem_take();
-  view_init();
+  init();
   lv_port_sem_give();
 }

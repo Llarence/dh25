@@ -5,7 +5,7 @@
 
 #include "../ui.h"
 
-lv_obj_t * ui_Screen2 = NULL;
+lv_obj_t * ui_Wifi = NULL;
 lv_obj_t * ui_Button3 = NULL;
 lv_obj_t * ui_Label3 = NULL;
 // event funtions
@@ -14,22 +14,22 @@ void ui_event_Button3(lv_event_t * e)
     lv_event_code_t event_code = lv_event_get_code(e);
 
     if(event_code == LV_EVENT_CLICKED) {
-        _ui_screen_change(&ui_Screen1, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_Screen1_screen_init);
+        abc_xyz(e);
     }
 }
 
 // build funtions
 
-void ui_Screen2_screen_init(void)
+void ui_Wifi_screen_init(void)
 {
-    ui_Screen2 = lv_obj_create(NULL);
-    lv_obj_clear_flag(ui_Screen2, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    ui_Wifi = lv_obj_create(NULL);
+    lv_obj_clear_flag(ui_Wifi, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
-    ui_Button3 = lv_btn_create(ui_Screen2);
+    ui_Button3 = lv_btn_create(ui_Wifi);
     lv_obj_set_width(ui_Button3, 173);
     lv_obj_set_height(ui_Button3, 50);
-    lv_obj_set_x(ui_Button3, 1);
-    lv_obj_set_y(ui_Button3, -81);
+    lv_obj_set_x(ui_Button3, -55);
+    lv_obj_set_y(ui_Button3, -62);
     lv_obj_set_align(ui_Button3, LV_ALIGN_CENTER);
 
     ui_Label3 = lv_label_create(ui_Button3);
@@ -42,12 +42,12 @@ void ui_Screen2_screen_init(void)
 
 }
 
-void ui_Screen2_screen_destroy(void)
+void ui_Wifi_screen_destroy(void)
 {
-    if(ui_Screen2) lv_obj_del(ui_Screen2);
+    if(ui_Wifi) lv_obj_del(ui_Wifi);
 
     // NULL screen variables
-    ui_Screen2 = NULL;
+    ui_Wifi = NULL;
     ui_Button3 = NULL;
     ui_Label3 = NULL;
 
