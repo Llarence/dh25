@@ -5,6 +5,7 @@
 
 #include "../ui.h"
 
+lv_obj_t * uic_Count;
 lv_obj_t * uic_ChatBox;
 lv_obj_t * uic_Send;
 lv_obj_t * uic_Chat;
@@ -14,6 +15,9 @@ lv_obj_t * ui_Send = NULL;
 lv_obj_t * ui_Label2 = NULL;
 lv_obj_t * ui_Keyboard1 = NULL;
 lv_obj_t * ui_ChatBox = NULL;
+lv_obj_t * ui_Button1 = NULL;
+lv_obj_t * ui_Label1 = NULL;
+lv_obj_t * ui_Count = NULL;
 // event funtions
 void ui_event_Send(lv_event_t * e)
 {
@@ -21,6 +25,15 @@ void ui_event_Send(lv_event_t * e)
 
     if(event_code == LV_EVENT_CLICKED) {
         send(e);
+    }
+}
+
+void ui_event_Button1(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if(event_code == LV_EVENT_CLICKED) {
+        restart(e);
     }
 }
 
@@ -32,26 +45,26 @@ void ui_Chat_screen_init(void)
     lv_obj_clear_flag(ui_Chat, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
     ui_Input = lv_textarea_create(ui_Chat);
-    lv_obj_set_width(ui_Input, 249);
+    lv_obj_set_width(ui_Input, 209);
     lv_obj_set_height(ui_Input, 70);
-    lv_obj_set_x(ui_Input, 73);
-    lv_obj_set_y(ui_Input, 15);
+    lv_obj_set_x(ui_Input, 15);
+    lv_obj_set_y(ui_Input, 25);
     lv_obj_set_align(ui_Input, LV_ALIGN_CENTER);
-    lv_textarea_set_placeholder_text(ui_Input, "Placeholder...");
+    lv_textarea_set_placeholder_text(ui_Input, "Input..");
     lv_obj_clear_flag(ui_Input, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_CLICK_FOCUSABLE);      /// Flags
 
     ui_Send = lv_btn_create(ui_Chat);
     lv_obj_set_width(ui_Send, 100);
     lv_obj_set_height(ui_Send, 50);
-    lv_obj_set_x(ui_Send, -157);
-    lv_obj_set_y(ui_Send, 14);
+    lv_obj_set_x(ui_Send, -163);
+    lv_obj_set_y(ui_Send, 24);
     lv_obj_set_align(ui_Send, LV_ALIGN_CENTER);
 
     ui_Label2 = lv_label_create(ui_Send);
     lv_obj_set_width(ui_Label2, lv_pct(100));
     lv_obj_set_height(ui_Label2, lv_pct(100));
-    lv_obj_set_x(ui_Label2, 10);
-    lv_obj_set_y(ui_Label2, 8);
+    lv_obj_set_x(ui_Label2, 11);
+    lv_obj_set_y(ui_Label2, 6);
     lv_obj_set_align(ui_Label2, LV_ALIGN_CENTER);
     lv_label_set_text(ui_Label2, "Send");
 
@@ -65,18 +78,43 @@ void ui_Chat_screen_init(void)
     ui_ChatBox = lv_textarea_create(ui_Chat);
     lv_obj_set_width(ui_ChatBox, 369);
     lv_obj_set_height(ui_ChatBox, 179);
-    lv_obj_set_x(ui_ChatBox, -7);
-    lv_obj_set_y(ui_ChatBox, -133);
+    lv_obj_set_x(ui_ChatBox, -28);
+    lv_obj_set_y(ui_ChatBox, -130);
     lv_obj_set_align(ui_ChatBox, LV_ALIGN_CENTER);
     lv_textarea_set_text(ui_ChatBox, "Hello user");
     lv_textarea_set_placeholder_text(ui_ChatBox, "Placeholder...");
     lv_obj_clear_flag(ui_ChatBox, LV_OBJ_FLAG_CLICK_FOCUSABLE);      /// Flags
 
+    ui_Button1 = lv_btn_create(ui_Chat);
+    lv_obj_set_width(ui_Button1, 52);
+    lv_obj_set_height(ui_Button1, 50);
+    lv_obj_set_x(ui_Button1, 197);
+    lv_obj_set_y(ui_Button1, -188);
+    lv_obj_set_align(ui_Button1, LV_ALIGN_CENTER);
+
+    ui_Label1 = lv_label_create(ui_Button1);
+    lv_obj_set_width(ui_Label1, lv_pct(100));
+    lv_obj_set_height(ui_Label1, lv_pct(100));
+    lv_obj_set_x(ui_Label1, 4);
+    lv_obj_set_y(ui_Label1, 6);
+    lv_obj_set_align(ui_Label1, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_Label1, "R");
+
+    ui_Count = lv_label_create(ui_Chat);
+    lv_obj_set_width(ui_Count, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_Count, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_Count, 174);
+    lv_obj_set_y(ui_Count, 20);
+    lv_obj_set_align(ui_Count, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_Count, "Scanned: 0");
+
     lv_obj_add_event_cb(ui_Send, ui_event_Send, LV_EVENT_ALL, NULL);
     lv_keyboard_set_textarea(ui_Keyboard1, ui_Input);
+    lv_obj_add_event_cb(ui_Button1, ui_event_Button1, LV_EVENT_ALL, NULL);
     uic_Chat = ui_Chat;
     uic_Send = ui_Send;
     uic_ChatBox = ui_ChatBox;
+    uic_Count = ui_Count;
 
 }
 
@@ -94,5 +132,9 @@ void ui_Chat_screen_destroy(void)
     ui_Keyboard1 = NULL;
     uic_ChatBox = NULL;
     ui_ChatBox = NULL;
+    ui_Button1 = NULL;
+    ui_Label1 = NULL;
+    uic_Count = NULL;
+    ui_Count = NULL;
 
 }

@@ -8,14 +8,12 @@
 #include "scan_wifi.h"
 #include "ui.h"
 
-void init() {
-  init_wifi();
+void init(char *name, char *password) {
+  init_wifi(name, password);
   init_wifi_scan_mutex();
 
   init_blue_scan_mutex();
 
   xTaskCreate(ip_scan_task, "ip_scan_task", 4096, NULL, 5, NULL);
   init_blue();
-
-  ui_init();
 }

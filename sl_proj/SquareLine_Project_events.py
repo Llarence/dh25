@@ -14,3 +14,11 @@ def Send(event_struct):
 def send(event_struct):
     return
 
+
+def restart(event_struct):
+    return
+
+
+def go(event_struct):
+    return
+

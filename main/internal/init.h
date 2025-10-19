@@ -3,6 +3,6 @@
 
 #include "lvgl.h"
 
-void init(void);
+void init(char *name, char *password);
 
 #endif

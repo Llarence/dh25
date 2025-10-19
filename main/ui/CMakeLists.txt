@@ -1,4 +1,5 @@
-SET(SOURCES screens/ui_Chat.c
+SET(SOURCES screens/ui_Wifi.c
+    screens/ui_Chat.c
     ui.c
     components/ui_comp_hook.c
     ui_helpers.c

@@ -20,10 +20,15 @@ extern lv_obj_t * ui_Send;
 extern lv_obj_t * ui_Label2;
 extern lv_obj_t * ui_Keyboard1;
 extern lv_obj_t * ui_ChatBox;
+extern void ui_event_Button1(lv_event_t * e);
+extern lv_obj_t * ui_Button1;
+extern lv_obj_t * ui_Label1;
+extern lv_obj_t * ui_Count;
 // CUSTOM VARIABLES
 extern lv_obj_t * uic_Chat;
 extern lv_obj_t * uic_Send;
 extern lv_obj_t * uic_ChatBox;
+extern lv_obj_t * uic_Count;
 
 #ifdef __cplusplus
 } /*extern "C"*/

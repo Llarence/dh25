@@ -34,6 +34,8 @@ int wifi_hits_end = 0;
 int wifi_hits_start = 0;
 bool wifi_hits_empty = true;
 
+volatile int wifis_seen = 0;
+
 static SemaphoreHandle_t wifi_hits_mutex = NULL;
 
 void init_wifi_scan_mutex(void) {
@@ -140,6 +142,10 @@ void ip_scan_task(void *_) {
   char *buffer[MAX_HIT_SIZE];
 
   for (int i = 1; i <= MAX_HOST_ID; i++) {
+    if (i - 1 > wifis_seen) {
+      wifis_seen = i - 1;
+    }
+
     for (int j = 0; j < sizeof(ports) / sizeof(ports[0]); j++) {
       uint16_t port = ports[j];
 
@@ -207,6 +213,10 @@ void ip_scan_task(void *_) {
 
       close(sock);
     }
+  }
+
+  if (MAX_HOST_ID > wifis_seen) {
+    wifis_seen = MAX_HOST_ID;
   }
 
   ESP_LOGI(TAG, "Network scan finished.");

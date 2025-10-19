@@ -4,8 +4,12 @@
 // Project name: SquareLine_Project
 
 #include "core/lv_obj.h"
+#include "esp_log.h"
+#include "esp_system.h"
+#include "init.h"
 #include "internal/agent.h"
 #include "misc/lv_async.h"
+#include "screens/ui_Wifi.h"
 #include "ui.h"
 #include "widgets/lv_textarea.h"
 #include <stdlib.h>
@@ -27,3 +31,27 @@ void send(lv_event_t *e) {
 
   lv_textarea_set_text(ui_Input, "");
 }
+
+void go(lv_event_t *e) {
+  char *wifi_name = strdup(lv_textarea_get_text(ui_WifiText));
+  lv_textarea_set_text(ui_WifiText, "Working...");
+
+  lv_refr_now(NULL);
+
+  char *password = strchr(wifi_name, '\n');
+  if (password != NULL) {
+    *password = '\0';
+
+    password += 1;
+  } else {
+    password = "";
+  }
+
+  init(wifi_name, password);
+  free(wifi_name);
+
+  _ui_screen_change(&ui_Chat, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0,
+                    &ui_Chat_screen_init);
+}
+
+void restart(lv_event_t *e) { esp_restart(); }

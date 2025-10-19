@@ -2,6 +2,7 @@
 
 #include "esp_event.h"
 #include "esp_log.h"
+#include "esp_system.h"
 #include "esp_wifi.h"
 #include "freertos/event_groups.h"
 #include "freertos/task.h"
@@ -9,9 +10,6 @@
 #include <string.h>
 
 static const char *TAG = "wifi_scan_connect";
-
-#define TARGET_SSID "Marvin's Room"
-#define TARGET_PASS "ptestptest"
 
 static EventGroupHandle_t s_wifi_event_group;
 const int CONNECTED_BIT = BIT0;
@@ -35,7 +33,7 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base,
   }
 }
 
-void init_wifi(void) {
+void init_wifi(char *name, char *password) {
   esp_err_t ret = nvs_flash_init();
   if (ret == ESP_ERR_NVS_NO_FREE_PAGES ||
       ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
@@ -76,7 +74,7 @@ void init_wifi(void) {
   for (int i = 0; i < ap_num; ++i) {
     ESP_LOGI(TAG, "Found SSID: %s (RSSI: %d)", ap_records[i].ssid,
              ap_records[i].rssi);
-    if (strcmp((const char *)ap_records[i].ssid, TARGET_SSID) == 0) {
+    if (strcmp((const char *)ap_records[i].ssid, name) == 0) {
       found = true;
       break;
     }
@@ -85,15 +83,15 @@ void init_wifi(void) {
   free(ap_records);
 
   if (!found) {
-    ESP_LOGW(TAG, "Target SSID '%s' not found. Aborting.", TARGET_SSID);
+    ESP_LOGW(TAG, "Target SSID '%s' not found. Aborting.", name);
+    esp_restart();
     return;
   }
 
   ESP_LOGI(TAG, "Target found, connecting...");
   wifi_config_t wifi_config = {0};
-  strncpy((char *)wifi_config.sta.ssid, TARGET_SSID,
-          sizeof(wifi_config.sta.ssid));
-  strncpy((char *)wifi_config.sta.password, TARGET_PASS,
+  strncpy((char *)wifi_config.sta.ssid, name, sizeof(wifi_config.sta.ssid));
+  strncpy((char *)wifi_config.sta.password, password,
           sizeof(wifi_config.sta.password));
   wifi_config.sta.threshold.authmode = WIFI_AUTH_WPA2_PSK;
   wifi_config.sta.pmf_cfg.capable = true;
@@ -107,8 +105,9 @@ void init_wifi(void) {
       xEventGroupWaitBits(s_wifi_event_group, CONNECTED_BIT, pdFALSE, pdFALSE,
                           pdMS_TO_TICKS(20000));
   if (bits & CONNECTED_BIT) {
-    ESP_LOGI(TAG, "Connected to %s", TARGET_SSID);
+    ESP_LOGI(TAG, "Connected to %s", name);
   } else {
+    esp_restart();
     ESP_LOGW(TAG, "Failed to connect within timeout");
   }
 }
