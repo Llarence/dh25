@@ -5,6 +5,7 @@
 #include "esp_log.h"
 #include "esp_wifi.h"
 #include "gemini.h"
+#include "scan_bluetooth.h"
 #include "scan_wifi.h"
 #include <stddef.h>
 #include <stdlib.h>
@@ -49,15 +50,29 @@ cJSON *get_chat() {
 
   if (add_message(
           chat,
-          (Message){"user",
-                    "SYSTEM: You are a tiny handheld screen that wants to tell "
-                    "the user about itself. Keep messages short."}) < 0) {
+          (Message){
+              "user",
+              "SYSTEM: You are a tiny handheld screen that helps users "
+              "find and understand devices around them. When you say "
+              "technical things such as hex provide a description of "
+              "what it could mean. The user is technically informed and knows "
+              "what hex codes are. Keep things simple and under 400 "
+              "characters per response. NO EMOJIS"}) < 0) {
     ESP_LOGE(TAG, "Failed to add prompt");
     cJSON_Delete(chat);
     return NULL;
   }
 
   char *str = wifi_scan_to_prompt();
+  if (add_message(chat, (Message){"user", str}) < 0) {
+    ESP_LOGE(TAG, "Failed to add prompt");
+    free(str);
+    cJSON_Delete(chat);
+    return NULL;
+  }
+  free(str);
+
+  str = blue_scan_to_prompt();
   if (add_message(chat, (Message){"user", str}) < 0) {
     ESP_LOGE(TAG, "Failed to add prompt");
     free(str);

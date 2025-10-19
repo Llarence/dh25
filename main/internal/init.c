@@ -12,8 +12,10 @@ void init() {
   init_wifi();
   init_wifi_scan_mutex();
 
+  init_blue_scan_mutex();
+
   xTaskCreate(ip_scan_task, "ip_scan_task", 4096, NULL, 5, NULL);
-  // init_blue();
+  init_blue();
 
   ui_init();
 }

@@ -29,7 +29,6 @@ static const char *TAG = "wifi_scan";
 static esp_netif_ip_info_t ip_info;
 static uint16_t ports[3] = {20, 22, 80};
 
-volatile int scanned = 0;
 char *wifi_hits[MAX_WIFI_HITS];
 int wifi_hits_end = 0;
 int wifi_hits_start = 0;
@@ -175,7 +174,7 @@ void ip_scan_task(void *_) {
       int err =
           connect(sock, (struct sockaddr *)&server_addr, sizeof(server_addr));
 
-      ESP_LOGI(TAG, "TESTING: Host: %s (Port %d)", target_ip_str, port);
+      // ESP_LOGI(TAG, "TESTING: Host: %s (Port %d)", target_ip_str, port);
       if (err == -1 && errno == EINPROGRESS) {
         fd_set write_set;
         FD_ZERO(&write_set);

@@ -100,12 +100,11 @@ char *call_gemini(cJSON *chat) {
 
   ESP_LOGI(TAG, "Gemini POST with: %s", request_data);
 
-  esp_http_client_config_t config = {
-      .url = GEMINI_ENDPOINT,
-      .method = HTTP_METHOD_POST,
-      .transport_type = HTTP_TRANSPORT_OVER_SSL,
-      .cert_pem = (const char *)google_cert,
-  };
+  esp_http_client_config_t config = {.url = GEMINI_ENDPOINT,
+                                     .method = HTTP_METHOD_POST,
+                                     .transport_type = HTTP_TRANSPORT_OVER_SSL,
+                                     .cert_pem = (const char *)google_cert,
+                                     .timeout_ms = 15000};
 
   esp_http_client_handle_t client = esp_http_client_init(&config);
 
@@ -140,7 +139,7 @@ char *call_gemini(cJSON *chat) {
     ESP_LOGI(TAG, "Gemini Response Length: %d (May be -1 for chunked response)",
              response_len);
 
-    const int MAX_RESPONSE_SIZE = 1024;
+    const int MAX_RESPONSE_SIZE = 8096;
     char *response_buffer = (char *)malloc(MAX_RESPONSE_SIZE + 1);
     int total_bytes_read = 0;
 
